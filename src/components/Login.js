@@ -7,6 +7,7 @@ import {
   Button,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useForm } from "../hooks/useForm";
 
 const useStyles = makeStyles({
   container: {
@@ -55,16 +56,45 @@ const useStyles = makeStyles({
   },
 });
 
-const Login = (props) => {
+const Login = ({ users, setCurUser }) => {
   const classes = useStyles();
+  const [values, setValues, clearValues] = useForm();
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChanges = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const foundUser = users.filter((u) => {
+      if (u.username === values.username && u.password === values.password) {
+        return true;
+      }
+    });
+    if (foundUser.length > 0) {
+      setError(false);
+      setErrorMessage("");
+      setCurUser(foundUser);
+    } else {
+      setError(true);
+      setErrorMessage("Incorrect Login");
+    }
+  };
 
   return (
     <Container maxWidth="sm" className={classes.container}>
       <Paper elevation={3} variant="outlined" className={classes.paper}>
         <Typography variant="h5">L O G I N</Typography>
-        <form className={classes.form}>
+        {errorMessage.length > 0 ? (
+          <p style={{ color: "red" }}>{errorMessage}</p>
+        ) : null}
+        <form className={classes.form} onSubmit={handleSubmit}>
           <TextField
             label="Username"
+            value={values.username}
+            onChange={handleChanges}
             className={classes.input}
             variant="filled"
             name="username"
@@ -75,9 +105,12 @@ const Login = (props) => {
             InputLabelProps={{
               style: { color: "black" },
             }}
+            error={error}
           />
           <TextField
             label="Password"
+            value={values.password}
+            onChange={handleChanges}
             className={classes.input}
             variant="filled"
             name="password"
@@ -89,6 +122,7 @@ const Login = (props) => {
             InputLabelProps={{
               style: { color: "black" },
             }}
+            error={error}
           />
           <Button
             type="submit"
