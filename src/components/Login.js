@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useForm } from "../hooks/useForm";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   container: {
@@ -57,6 +58,8 @@ const useStyles = makeStyles({
 });
 
 const Login = ({ users, setCurUser }) => {
+  const history = useHistory();
+
   const classes = useStyles();
   const [values, setValues, clearValues] = useForm();
   const [error, setError] = useState(false);
@@ -77,6 +80,7 @@ const Login = ({ users, setCurUser }) => {
       setError(false);
       setErrorMessage("");
       setCurUser(foundUser);
+      history.push("/home");
     } else {
       setError(true);
       setErrorMessage("Incorrect Login");
